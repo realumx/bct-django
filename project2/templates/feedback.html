@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <style>
+        :root {
+            --bg: #f3efe6;
+            --panel: #fffdf8;
+            --text: #1d2b36;
+            --muted: #596a78;
+            --accent: #0c7c59;
+            --accent-dark: #086548;
+            --line: #d7d1c4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 10%, #fff4d6 0%, transparent 25%),
+                radial-gradient(circle at 90% 90%, #d8efe7 0%, transparent 30%),
+                linear-gradient(135deg, #f7f2e9, #ebe4d8);
+            padding: 24px;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 12px 24px rgba(20, 37, 52, 0.08);
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        p {
+            color: var(--muted);
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 1rem;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 12px 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--accent-dark);
+        }
+
+        .list {
+            display: grid;
+            gap: 12px;
+            max-height: 70vh;
+            overflow: auto;
+            padding-right: 4px;
+        }
+
+        .item {
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--accent);
+            border-radius: 10px;
+            padding: 14px;
+            background: #fffcf5;
+        }
+
+        .item-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .stars {
+            color: #d97706;
+            font-weight: 700;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .empty {
+            border: 1px dashed var(--line);
+            border-radius: 10px;
+            padding: 18px;
+            color: var(--muted);
+            background: #fffdfa;
+        }
+
+        @media (max-width: 900px) {
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .list {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="card">
+            <h1>Feedback Form</h1>
+            <p>Submit your feedback from the left panel. New entries appear on the right side immediately.</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div>
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div>
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+
+                <div>
+                    <label for="rating">Rating</label>
+                    <select id="rating" name="rating" required>
+                        <option value="">Select rating</option>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Average</option>
+                        <option value="1">1 - Poor</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+
+                <button class="btn" type="submit">Submit Feedback</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Feedback List</h2>
+            <p>All submitted feedback entries are shown below.</p>
+
+            <div class="list">
+                {% for item in feedback_items %}
+                    <article class="item">
+                        <div class="item-head">
+                            <strong>{{ item.name }}</strong>
+                            <span class="stars">{{ item.rating }}/5</span>
+                        </div>
+                        <div class="muted">{{ item.email }} | {{ item.created_at|date:"d M Y, h:i A" }}</div>
+                        <p><strong>{{ item.subject }}</strong></p>
+                        <p>{{ item.message }}</p>
+                    </article>
+                {% empty %}
+                    <div class="empty">No feedback submitted yet. Your first submission will appear here.</div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</body>
+</html>
