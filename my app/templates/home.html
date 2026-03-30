@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Manager</title>
+    <style>
+        :root {
+            --bg-a: #f0f5ff;
+            --bg-b: #f7fbf2;
+            --panel: #ffffff;
+            --panel-soft: #f8fbff;
+            --primary: #1858c8;
+            --primary-dark: #13459e;
+            --danger: #cc2f3f;
+            --danger-dark: #a82432;
+            --text: #162136;
+            --muted: #60708c;
+            --border: #d8e2f1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+            background: radial-gradient(circle at 20% 20%, var(--bg-a), var(--bg-b));
+            color: var(--text);
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 28px;
+        }
+
+        .layout {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 18px 40px rgba(18, 35, 66, 0.12);
+            border: 1px solid rgba(216, 226, 241, 0.65);
+        }
+
+        .panel.right {
+            background: linear-gradient(180deg, #ffffff, var(--panel-soft));
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 2.1rem;
+        }
+
+        .subtitle {
+            margin-bottom: 22px;
+            color: var(--muted);
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(24, 88, 200, 0.16);
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .submit-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 18px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .count-badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #e9f1ff;
+            color: #1549a5;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .student-list {
+            display: grid;
+            gap: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .student-item {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #fff;
+            padding: 14px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .student-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .student-name {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 1.04rem;
+        }
+
+        .student-meta {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .delete-form {
+            margin: 0;
+        }
+
+        .edit-btn {
+            display: inline-block;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 8px 11px;
+            background: #1f7f52;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .delete-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 8px 11px;
+            background: var(--danger);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            background: var(--danger-dark);
+        }
+
+        .edit-note {
+            margin: 0 0 14px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: #e8f7ee;
+            color: #165f3d;
+            font-size: 0.92rem;
+        }
+
+        .cancel-link {
+            margin-left: 10px;
+            color: #2757a6;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .empty-state {
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        @media (max-width: 1000px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .panel {
+                padding: 20px;
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="layout">
+            <section class="panel left">
+            <h1>Student Details Form</h1>
+            <p class="subtitle">Add student details on the left. Saved records appear instantly on the right.</p>
+
+            {% if edit_student %}
+                <p class="edit-note">
+                    Editing: <strong>{{ edit_student.name }}</strong> (ID: {{ edit_student.id }})
+                    <a href="{% url 'home' %}" class="cancel-link">Cancel</a>
+                </p>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="{% if edit_student %}update{% else %}create{% endif %}">
+                {% if edit_student %}
+                    <input type="hidden" name="student_id" value="{{ edit_student.id }}">
+                {% endif %}
+
+                <div>
+                    <label for="name">Student Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" value="{{ form_data.name }}" required>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <label for="roll_number">Roll Number</label>
+                        <input type="text" id="roll_number" name="roll_number" placeholder="Enter roll number" value="{{ form_data.roll_number }}" required>
+                    </div>
+
+                    <div>
+                        <label for="year">Year</label>
+                        <select id="year" name="year" required>
+                            <option value="">Select year</option>
+                            <option value="1st Year" {% if form_data.year == '1st Year' %}selected{% endif %}>1st Year</option>
+                            <option value="2nd Year" {% if form_data.year == '2nd Year' %}selected{% endif %}>2nd Year</option>
+                            <option value="3rd Year" {% if form_data.year == '3rd Year' %}selected{% endif %}>3rd Year</option>
+                            <option value="4th Year" {% if form_data.year == '4th Year' %}selected{% endif %}>4th Year</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div>
+                        <label for="department">Department</label>
+                        <select id="department" name="department" required>
+                            <option value="">Select department</option>
+                            {% for department in departments %}
+                                <option value="{{ department }}" {% if form_data.department == department %}selected{% endif %}>{{ department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" value="{{ form_data.email }}" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">{% if edit_student %}Update{% else %}Submit{% endif %}</button>
+            </form>
+            </section>
+
+            <section class="panel right">
+                <div class="panel-header">
+                    <h2>Submitted Students</h2>
+                    <span class="count-badge">{{ students|length }} total</span>
+                </div>
+
+                {% if students %}
+                    <div class="student-list">
+                        {% for student in students %}
+                            <article class="student-item">
+                                <div class="student-top">
+                                    <h3 class="student-name">{{ student.name }}</h3>
+                                    <div class="row-actions">
+                                        <a href="{% url 'home' %}?edit={{ student.id }}" class="edit-btn">Edit</a>
+                                        <form method="post" class="delete-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="student_id" value="{{ student.id }}">
+                                            <button type="submit" class="delete-btn">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <p class="student-meta"><strong>Roll:</strong> {{ student.roll_number }} | <strong>Year:</strong> {{ student.year }}</p>
+                                <p class="student-meta"><strong>Dept:</strong> {{ student.department }}</p>
+                                <p class="student-meta"><strong>Email:</strong> {{ student.email }}</p>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        No student records yet. Submit the form to add the first record.
+                    </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</body>
+</html>

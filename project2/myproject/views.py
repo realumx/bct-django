@@ -15,6 +15,13 @@ def contact(request):
 
 def feedback(request):
     if request.method == "POST":
+        action = request.POST.get("action", "create")
+
+        if action == "delete":
+            feedback_id = request.POST.get("feedback_id")
+            Feedback.objects.filter(id=feedback_id).delete()
+            return redirect("feedback")
+
         rating_raw = request.POST.get("rating", "0")
         try:
             rating_value = int(rating_raw)
